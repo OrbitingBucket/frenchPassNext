@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env.DATABASE_URL
+}
+
+enum DifficultyLevel {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+enum ExerciseType {
+  mcq
+  text_input
+  speech
+}
+
+model Exercise {
+  id              String         @id @default(uuid())
+  category        String
+  subcategory     String
+  type            ExerciseType   @default(mcq)
+  difficultyLevel DifficultyLevel
+  instruction     String
+  sentence        String
+  options         Json
+  correctAnswer   String
+  feedback        Json
+  points          Int            @default(10)
+  timeLimit       Int            @default(30)
+  tags            String[]
+  createdAt       DateTime       @default(now())
+}
