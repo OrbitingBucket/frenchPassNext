@@ -1,23 +1,21 @@
 {
   "name": "french-pass",
   "private": true,
+  "packageManager": "npm@10.8.3",
   "workspaces": [
-    "client",
-    "server",
-    "shared"
+    "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "npm run dev --workspace=@french-pass/client",
-    "dev:server": "npm run dev --workspace=@french-pass/server",
-    "build": "npm run build --workspaces",
-    "lint": "npm run lint --workspaces",
-    "test": "npm run test --workspaces",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
     "prepare": "husky"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
     "husky": "^9.1.6",
-    "lint-staged": "^15.2.2"
+    "lint-staged": "^15.2.2",
+    "turbo": "latest"
   }
 }
