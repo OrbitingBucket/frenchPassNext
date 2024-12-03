@@ -1,0 +1,42 @@
+2024-11-29 06:15:47.245 CET [29760] LOG:  starting PostgreSQL 16.2, compiled by Visual C++ build 1937, 64-bit
+2024-11-29 06:15:47.249 CET [29760] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-11-29 06:15:47.249 CET [29760] LOG:  listening on IPv6 address "::1", port 5432
+2024-11-29 06:15:47.299 CET [46340] LOG:  database system was shut down at 2024-11-29 06:15:27 CET
+2024-11-29 06:15:47.335 CET [29760] LOG:  database system is ready to accept connections
+2024-11-29 06:20:47.371 CET [4980] LOG:  checkpoint starting: time
+2024-11-29 06:20:52.083 CET [4980] LOG:  checkpoint complete: wrote 46 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.700 s, sync=0.005 s, total=4.712 s; sync files=11, longest=0.002 s, average=0.001 s; distance=276 kB, estimate=276 kB; lsn=0/15B3A88, redo lsn=0/15B3A50
+2024-12-03 05:18:07.567 CET [35752] FATAL:  role "postgres" does not exist
+2024-12-03 05:20:46.623 CET [48956] FATAL:  database "admin" does not exist
+2024-12-03 05:28:01.624 CET [23968] ERROR:  syntax error at or near "password" at character 35
+2024-12-03 05:28:01.624 CET [23968] STATEMENT:  CREATE USER fp_user WITH PASSWORD password;
+2024-12-03 05:29:58.303 CET [4980] LOG:  checkpoint starting: time
+2024-12-03 05:31:44.026 CET [4980] LOG:  checkpoint complete: wrote 981 buffers (6.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=105.516 s, sync=0.185 s, total=105.724 s; sync files=307, longest=0.004 s, average=0.001 s; distance=4554 kB, estimate=4554 kB; lsn=0/1A264D8, redo lsn=0/1A264A0
+2024-12-03 05:33:52.087 CET [18920] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-03 05:33:52.125 CET [37192] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2024-12-03 05:33:52.125 CET [37192] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2024-12-03 05:33:52.656 CET [4980] LOG:  checkpoint starting: immediate force wait
+2024-12-03 05:33:52.700 CET [4980] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 1 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.005 s, total=0.044 s; sync files=4, longest=0.002 s, average=0.002 s; distance=4551 kB, estimate=4554 kB; lsn=0/1E98200, redo lsn=0/1E981C8
+2024-12-03 05:33:53.321 CET [4980] LOG:  checkpoint starting: immediate force wait
+2024-12-03 05:33:53.349 CET [4980] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.002 s, sync=0.002 s, total=0.028 s; sync files=5, longest=0.001 s, average=0.001 s; distance=4566 kB, estimate=4566 kB; lsn=0/230DDF0, redo lsn=0/230DDB8
+2024-12-03 05:33:53.981 CET [4980] LOG:  checkpoint starting: immediate force wait
+2024-12-03 05:33:54.041 CET [4980] LOG:  checkpoint complete: wrote 49 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.040 s, sync=0.016 s, total=0.061 s; sync files=41, longest=0.002 s, average=0.001 s; distance=4714 kB, estimate=4714 kB; lsn=0/27A8968, redo lsn=0/27A8930
+2024-12-03 05:33:54.652 CET [4980] LOG:  checkpoint starting: immediate force wait
+2024-12-03 05:33:54.659 CET [4980] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.002 s, total=0.007 s; sync files=4, longest=0.001 s, average=0.001 s; distance=4552 kB, estimate=4698 kB; lsn=0/2C1A9A0, redo lsn=0/2C1A968
+2024-12-03 05:33:54.732 CET [37192] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-03 05:38:54.664 CET [4980] LOG:  checkpoint starting: time
+2024-12-03 05:39:00.523 CET [4980] LOG:  checkpoint complete: wrote 55 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=5.837 s, sync=0.017 s, total=5.859 s; sync files=40, longest=0.004 s, average=0.001 s; distance=168 kB, estimate=4245 kB; lsn=0/2C44D98, redo lsn=0/2C44D60
+2024-12-03 09:16:39.064 CET [14756] ERROR:  permission denied for table Exercise
+2024-12-03 09:16:39.064 CET [14756] STATEMENT:  select * from "Exercise";
+2024-12-03 09:17:09.495 CET [14756] ERROR:  permission denied for table Exercise
+2024-12-03 09:17:09.495 CET [14756] STATEMENT:  select * from "Exercise";
+2024-12-03 09:19:00.407 CET [36984] ERROR:  syntax error at or near ":" at character 44
+2024-12-03 09:19:00.407 CET [36984] STATEMENT:  grant select on table "Exercise" to fp_user:
+	grant select on table "Exercise" to fp_user;
+2024-12-03 09:23:54.879 CET [4980] LOG:  checkpoint starting: time
+2024-12-03 09:23:55.752 CET [4980] LOG:  checkpoint complete: wrote 9 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.864 s, sync=0.004 s, total=0.874 s; sync files=8, longest=0.002 s, average=0.001 s; distance=7 kB, estimate=3821 kB; lsn=0/2C46A58, redo lsn=0/2C46A20
+2024-12-03 10:08:00.741 CET [36320] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-03 10:08:00.745 CET [36460] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
