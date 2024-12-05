@@ -1,4 +1,5 @@
-// client/src/App.tsx
+// packages/client/src/App.tsx
+
 import { useState, useEffect } from 'react';
 import Layout from './components/layout/Layout';
 import MCQExercise from './components/exercise/MCQExercise';
@@ -54,36 +55,45 @@ function App() {
   if (!exercises.length) return <div>No exercises found</div>;
 
   const currentExercise = exercises[currentExerciseIndex];
+  const progress = exercises.length
+    ? ((currentExerciseIndex + 1) / exercises.length) * 100
+    : 0;
 
-  return (
-    <Layout>
-      <div className="bg-white rounded-lg p-6 w-full">
-        <MCQExercise
-          question={currentExercise}
-          onAnswer={handleAnswer}
-          selectedAnswer={selectedAnswer}
-        />
-        
-        {showFeedback && selectedAnswer && (
-          <>
-            <Feedback
-              isCorrect={isCorrect}
-              feedback={currentExercise.feedback[selectedAnswer]}
+    return (
+      <Layout progress={((currentExerciseIndex + 1) / exercises.length) * 100}>
+        <div className="w-full min-w-[320px] max-w-[640px] mx-auto bg-white rounded-lg shadow-md">
+          <div className="p-6">
+            {/* Exercise Content */}
+            <MCQExercise
+              question={currentExercise}
+              onAnswer={handleAnswer}
+              selectedAnswer={selectedAnswer}
             />
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={handleNext}
-                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                disabled={currentExerciseIndex === exercises.length - 1}
-              >
-                Next Exercise
-              </button>
+          </div>
+  
+          {/* Feedback Section */}
+          {showFeedback && selectedAnswer && (
+            <div className="border-t border-gray-100">
+              <div className="p-6">
+                <Feedback
+                  isCorrect={isCorrect}
+                  feedback={currentExercise.feedback[selectedAnswer]}
+                />
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={handleNext}
+                    className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
+                    disabled={currentExerciseIndex === exercises.length - 1}
+                  >
+                    Next Exercise
+                  </button>
+                </div>
+              </div>
             </div>
-          </>
-        )}
-      </div>
-    </Layout>
-  );
-}
+          )}
+        </div>
+      </Layout>
+    );
+  }
 
 export default App;

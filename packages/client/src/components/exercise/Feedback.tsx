@@ -8,11 +8,11 @@ interface FeedbackProps {
 
 const Feedback: React.FC<FeedbackProps> = ({ isCorrect, feedback }) => {
   return (
-    <div className="fixed bottom-0 left-0 w-full px-4 pb-4">
+    <div className="fixed bottom-4 left-0 right-0 px-4">
       <div
-className={`max-w-screen-md mx-auto p-6 rounded ${
-    isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-  }`}
+        className={`mx-auto max-w-2xl p-6 rounded ${
+          isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        } shadow-md`}
       >
         <h3 className="text-lg font-bold mb-2">
           {isCorrect ? 'Correct!' : 'Incorrect'}

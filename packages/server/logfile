@@ -40,3 +40,7 @@
 	
 2024-12-03 10:08:00.745 CET [36460] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
 	
+2024-12-04 06:30:54.802 CET [6780] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-04 06:30:54.804 CET [26160] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
