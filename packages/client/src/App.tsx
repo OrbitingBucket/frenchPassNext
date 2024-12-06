@@ -50,50 +50,44 @@ function App() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!exercises.length) return <div>No exercises found</div>;
+  if (loading) return <div className="text-center">Loading...</div>;
+  if (error) return <div className="text-center text-red-500">Error: {error}</div>;
+  if (!exercises.length) return <div className="text-center">No exercises found</div>;
 
   const currentExercise = exercises[currentExerciseIndex];
   const progress = exercises.length
     ? ((currentExerciseIndex + 1) / exercises.length) * 100
     : 0;
 
-    return (
-      <Layout progress={((currentExerciseIndex + 1) / exercises.length) * 100}>
-        <div className="w-full min-w-[320px] max-w-[640px] mx-auto bg-white rounded-lg shadow-md">
-          <div className="p-6">
-            {/* Exercise Content */}
-            <MCQExercise
-              question={currentExercise}
-              onAnswer={handleAnswer}
-              selectedAnswer={selectedAnswer}
-            />
+  return (
+    <Layout progress={progress}>
+      {/* Exercise Content */}
+      <MCQExercise
+        question={currentExercise}
+        onAnswer={handleAnswer}
+        selectedAnswer={selectedAnswer}
+      />
+
+      {/* Feedback Section */}
+      {showFeedback && selectedAnswer && (
+        <div className="mt-6">
+          <Feedback
+            isCorrect={isCorrect}
+            feedback={currentExercise.feedback[selectedAnswer]}
+          />
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={handleNext}
+              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors disabled:bg-primary-300"
+              disabled={currentExerciseIndex === exercises.length - 1}
+            >
+              Next Exercise
+            </button>
           </div>
-  
-          {/* Feedback Section */}
-          {showFeedback && selectedAnswer && (
-            <div className="border-t border-gray-100">
-              <div className="p-6">
-                <Feedback
-                  isCorrect={isCorrect}
-                  feedback={currentExercise.feedback[selectedAnswer]}
-                />
-                <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={handleNext}
-                    className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
-                    disabled={currentExerciseIndex === exercises.length - 1}
-                  >
-                    Next Exercise
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
-      </Layout>
-    );
-  }
+      )}
+    </Layout>
+  );
+}
 
 export default App;

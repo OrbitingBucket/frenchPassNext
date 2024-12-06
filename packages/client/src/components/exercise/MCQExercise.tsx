@@ -9,34 +9,20 @@ interface MCQExerciseProps {
   onAnswer: (answer: string) => void;
 }
 
-const MCQExercise = ({ question, selectedAnswer, onAnswer }: MCQExerciseProps) => {
+const MCQExercise: React.FC<MCQExerciseProps> = ({ question, selectedAnswer, onAnswer }) => {
   return (
-    <div className="space-y-6">
-      {/* Category Section */}
-      {question.category && question.subcategory && (
-        <div className="text-sm text-gray-600 flex items-center space-x-2">
-          <span>{question.category}</span>
-          <span>•</span>
-          <span>{question.subcategory}</span>
-        </div>
-      )}
-
-      {/* Question Section */}
+    <div className="space-y-8"> {/* Added more vertical spacing */}
+      {/* Main Sentence */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-800 break-words">
-          {question.instruction}
-        </h2>
-
-        {/* Main Sentence */}
         <div className="w-full">
-          <p className="text-lg text-gray-700 whitespace-pre-wrap break-words">
+          <p className="text-xl text-gray-800 whitespace-pre-wrap break-words leading-relaxed">
+            {/* Left-aligned the question */}
             {question.sentence.split('___').map((part, index, array) => (
               <React.Fragment key={index}>
                 <span className="inline-block">{part}</span>
+                {/* Add underline only if it's not the last fragment */}
                 {index < array.length - 1 && (
-                  <span className="inline-block mx-1 w-12 border-b-2 border-blue-500 text-center">
-                    ___
-                  </span>
+                  <span className="inline-block mx-2 w-16 border-b border-black text-center" />
                 )}
               </React.Fragment>
             ))}
@@ -51,8 +37,7 @@ const MCQExercise = ({ question, selectedAnswer, onAnswer }: MCQExerciseProps) =
             key={key}
             onClick={() => onAnswer(key)}
             disabled={selectedAnswer !== null}
-            className={`
-              w-full p-4 text-left rounded-lg border-2 transition-colors
+            className={`w-full p-4 text-left rounded-lg border-2 transition-colors
               break-words whitespace-normal
               ${
                 selectedAnswer === key
@@ -65,8 +50,7 @@ const MCQExercise = ({ question, selectedAnswer, onAnswer }: MCQExerciseProps) =
                 selectedAnswer !== null && key === question.correctAnswer
                   ? 'border-success-500 bg-success-50'
                   : ''
-              }
-            `}
+              }`}
           >
             {value}
           </button>

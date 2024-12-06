@@ -10,7 +10,7 @@ const Feedback: React.FC<FeedbackProps> = ({ isCorrect, feedback }) => {
   return (
     <div className="fixed bottom-4 left-0 right-0 px-4">
       <div
-        className={`mx-auto max-w-2xl p-6 rounded ${
+        className={`mx-auto max-w-3xl p-6 rounded ${
           isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
         } shadow-md`}
       >

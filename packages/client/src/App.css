@@ -1,8 +1,7 @@
-#root {
-  width: 100%;
-  margin: 0 auto;
-  padding: 1.5rem;
-}
+/* packages/client/src/App.css */
+
+/* Removed conflicting styles on #root */
+/* Global width and margin are managed by Layout component */
 
 /* Optional additional styling */
 .logo {
