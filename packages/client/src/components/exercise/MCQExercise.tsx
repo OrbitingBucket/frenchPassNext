@@ -1,26 +1,45 @@
-// packages/client/src/components/exercise/MCQExercise.tsx
-
-import React from 'react';
+// src/components/exercise/MCQExercise.tsx
+import React, { useEffect } from 'react';
 import { Exercise } from '../../types/exercise';
 
 interface MCQExerciseProps {
   question: Exercise;
   selectedAnswer: string | null;
   onAnswer: (answer: string) => void;
+  disabled: boolean;
 }
 
-const MCQExercise: React.FC<MCQExerciseProps> = ({ question, selectedAnswer, onAnswer }) => {
+const MCQExercise: React.FC<MCQExerciseProps> = ({ 
+  question, 
+  selectedAnswer, 
+  onAnswer,
+  disabled 
+}) => {
+  useEffect(() => {
+    console.log('[MCQExercise] Rendered with:', {
+      questionId: question.id,
+      selectedAnswer,
+      disabled
+    });
+  }, [question.id, selectedAnswer, disabled]);
+
+  const handleAnswerClick = (key: string) => {
+    console.log('[MCQExercise] Answer clicked:', {
+      key,
+      disabled,
+      currentlySelected: selectedAnswer
+    });
+    onAnswer(key);
+  };
+
   return (
-    <div className="space-y-8"> {/* Added more vertical spacing */}
-      {/* Main Sentence */}
+    <div className="space-y-8">
       <div className="space-y-4">
         <div className="w-full">
           <p className="text-xl text-gray-800 whitespace-pre-wrap break-words leading-relaxed">
-            {/* Left-aligned the question */}
             {question.sentence.split('___').map((part, index, array) => (
               <React.Fragment key={index}>
                 <span className="inline-block">{part}</span>
-                {/* Add underline only if it's not the last fragment */}
                 {index < array.length - 1 && (
                   <span className="inline-block mx-2 w-16 border-b border-black text-center" />
                 )}
@@ -30,15 +49,14 @@ const MCQExercise: React.FC<MCQExerciseProps> = ({ question, selectedAnswer, onA
         </div>
       </div>
 
-      {/* Options Grid */}
       <div className="grid gap-3">
         {Object.entries(question.options).map(([key, value]) => (
           <button
             key={key}
-            onClick={() => onAnswer(key)}
-            disabled={selectedAnswer !== null}
+            onClick={() => handleAnswerClick(key)}
+            disabled={disabled || selectedAnswer !== null}
             className={`w-full p-4 text-left rounded-lg border-2 transition-colors
-              break-words whitespace-normal
+              ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
               ${
                 selectedAnswer === key
                   ? selectedAnswer === question.correctAnswer

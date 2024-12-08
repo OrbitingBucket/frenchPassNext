@@ -48,3 +48,34 @@
 	
 2024-12-05 06:31:41.383 CET [33624] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
 	
+2024-12-06 06:41:12.761 CET [56328] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-06 06:41:12.766 CET [28500] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-06 10:11:53.890 CET [29760] LOG:  could not reserve shared memory region (addr=000001C9D9750000) for child 0000000000001340: error code 487
+2024-12-08 07:07:33.099 CET [4980] LOG:  checkpoint starting: time
+2024-12-08 07:07:33.362 CET [4980] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.224 s, sync=0.004 s, total=0.266 s; sync files=3, longest=0.002 s, average=0.002 s; distance=8 kB, estimate=3440 kB; lsn=0/2C48CC0, redo lsn=0/2C48C88
+2024-12-08 07:43:19.414 CET [4184] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-08 07:45:18.093 CET [43620] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-08 07:45:31.299 CET [1868] ERROR:  table "_prisma_migrations" does not exist
+2024-12-08 07:45:31.299 CET [1868] STATEMENT:  DROP TABLE _prisma_migrations
+2024-12-08 07:45:31.412 CET [1868] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-08 07:45:44.938 CET [4980] LOG:  checkpoint starting: immediate force wait
+2024-12-08 07:45:45.137 CET [4980] LOG:  checkpoint complete: wrote 69 buffers (0.4%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.172 s, sync=0.021 s, total=0.199 s; sync files=55, longest=0.002 s, average=0.001 s; distance=4854 kB, estimate=4854 kB; lsn=0/3106688, redo lsn=0/3106650
+2024-12-08 07:45:46.160 CET [4980] LOG:  checkpoint starting: immediate force wait
+2024-12-08 07:45:46.188 CET [4980] LOG:  checkpoint complete: wrote 14 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.019 s, total=0.029 s; sync files=12, longest=0.005 s, average=0.002 s; distance=4604 kB, estimate=4829 kB; lsn=0/3585768, redo lsn=0/3585730
+2024-12-08 07:45:46.869 CET [4980] LOG:  checkpoint starting: immediate force wait
+2024-12-08 07:45:46.885 CET [4980] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.005 s, total=0.016 s; sync files=4, longest=0.003 s, average=0.002 s; distance=4584 kB, estimate=4804 kB; lsn=0/39FF910, redo lsn=0/39FF8D8
+2024-12-08 07:45:47.558 CET [4980] LOG:  checkpoint starting: immediate force wait
+2024-12-08 07:45:47.577 CET [4980] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.003 s, total=0.020 s; sync files=4, longest=0.001 s, average=0.001 s; distance=4584 kB, estimate=4782 kB; lsn=0/3E79B78, redo lsn=0/3E79B40
+2024-12-08 07:45:47.646 CET [23936] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-08 07:50:47.582 CET [4980] LOG:  checkpoint starting: time
+2024-12-08 07:50:47.915 CET [4980] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.323 s, sync=0.004 s, total=0.333 s; sync files=4, longest=0.002 s, average=0.001 s; distance=8 kB, estimate=4305 kB; lsn=0/3E7BDE8, redo lsn=0/3E7BDB0
+2024-12-08 08:38:28.604 CET [49000] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-08 08:38:28.604 CET [13620] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	

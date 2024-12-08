@@ -4,13 +4,13 @@ export interface Exercise {
     category: string;
     subcategory: string;
     type: 'mcq';
-    difficulty_level: string;
+    difficultyLevel: string;
     instruction: string;
     sentence: string;
     options: Record<string, string>;
     feedback: Record<string, string>;
     points: number;
-    time_limit: number;
+    timeLimit: number;
     tags: string[];
   }
   
@@ -19,7 +19,7 @@ export interface Exercise {
       category?: string; 
       difficulty?: string; 
       limit?: number; 
-    }): Promise<Omit<Exercise, 'correct_answer'>[]> {
+    }): Promise<Omit<Exercise, 'correctAnswer'>[]> {
       const response = await fetch('/api/exercises?' + new URLSearchParams({
         ...params,
         limit: params.limit?.toString() || '10'

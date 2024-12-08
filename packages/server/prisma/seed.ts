@@ -7,24 +7,44 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Start seeding...')
   
+  await prisma.exercise.deleteMany({})
+  
   for (const exercise of exercises) {
-    const result = await prisma.exercise.create({
-      data: {
+    const result = await prisma.exercise.upsert({
+      where: {
+        id: exercise.id
+      },
+      update: {
         category: exercise.category,
         subcategory: exercise.subcategory,
         type: exercise.type,
-        difficultyLevel: exercise.difficulty_level,
+        difficultyLevel: exercise.difficultyLevel,
         instruction: exercise.instruction,
         sentence: exercise.sentence,
         options: exercise.options,
-        correctAnswer: exercise.correct_answer,
+        correctAnswer: exercise.correctAnswer,
         feedback: exercise.feedback,
         points: exercise.points,
-        timeLimit: exercise.time_limit,
+        timeLimit: exercise.timeLimit,
+        tags: exercise.tags,
+      },
+      create: {
+        id: exercise.id,
+        category: exercise.category,
+        subcategory: exercise.subcategory,
+        type: exercise.type,
+        difficultyLevel: exercise.difficultyLevel,
+        instruction: exercise.instruction,
+        sentence: exercise.sentence,
+        options: exercise.options,
+        correctAnswer: exercise.correctAnswer,
+        feedback: exercise.feedback,
+        points: exercise.points,
+        timeLimit: exercise.timeLimit,
         tags: exercise.tags,
       },
     })
-    console.log(`Created exercise with id: ${result.id}`)
+    console.log(`Upserted exercise with id: ${result.id}`)
   }
 
   console.log('Seeding finished.')

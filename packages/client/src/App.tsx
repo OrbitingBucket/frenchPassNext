@@ -1,6 +1,6 @@
 // packages/client/src/App.tsx
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Layout from './components/layout/Layout';
 import MCQExercise from './components/exercise/MCQExercise';
 import Feedback from './components/exercise/Feedback';
@@ -15,6 +15,8 @@ function App() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isTimerActive, setIsTimerActive] = useState(true);
 
   useEffect(() => {
     loadExercises();
@@ -32,43 +34,102 @@ function App() {
     }
   };
 
-  const handleAnswer = (answer: string) => {
-    if (!exercises[currentExerciseIndex]) return;
+  useEffect(() => {
+    if (exercises[currentExerciseIndex]) {
+      const newTimeLimit = exercises[currentExerciseIndex].timeLimit;
+      console.log('[App] Starting new exercise:', {
+        index: currentExerciseIndex,
+        timeLimit: newTimeLimit
+      });
+      setTimeLeft(newTimeLimit);
+      setIsTimerActive(true);
+      setSelectedAnswer(null); // Reset selected answer
+      setShowFeedback(false); // Reset feedback
+      setIsCorrect(null); // Reset correct state
+    }
+  }, [currentExerciseIndex, exercises]);
 
+  const handleTimeUp = useCallback(() => {
+    setIsTimerActive(false);
+    setShowFeedback(true);
+    const currentExercise = exercises[currentExerciseIndex];
+    setSelectedAnswer(currentExercise.correctAnswer);
+    setIsCorrect(false);
+  }, [currentExerciseIndex, exercises]);
+
+  const handleAnswer = (answer: string) => {
+    if (!exercises[currentExerciseIndex] || !isTimerActive) {
+      console.log('[App] Answer rejected:', { isTimerActive, answer });
+      return;
+    }
+
+    console.log('[App] Answer selected:', {
+      answer,
+      exerciseId: exercises[currentExerciseIndex].id
+    });
+
+    setIsTimerActive(false);
     setSelectedAnswer(answer);
     const correct = answer === exercises[currentExerciseIndex].correctAnswer;
+    console.log('[App] Answer evaluation:', { correct });
     setIsCorrect(correct);
     setShowFeedback(true);
   };
 
   const handleNext = () => {
     if (currentExerciseIndex < exercises.length - 1) {
-      setCurrentExerciseIndex((prev) => prev + 1);
-      setSelectedAnswer(null);
-      setShowFeedback(false);
-      setIsCorrect(null);
+      console.log('[App] Moving to next exercise:', {
+        current: currentExerciseIndex,
+        next: currentExerciseIndex + 1,
+        totalExercises: exercises.length
+      });
+      setCurrentExerciseIndex(prev => prev + 1);
+    } else {
+      console.log('[App] Reached end of exercises');
     }
   };
 
-  if (loading) return <div className="text-center">Loading...</div>;
-  if (error) return <div className="text-center text-red-500">Error: {error}</div>;
-  if (!exercises.length) return <div className="text-center">No exercises found</div>;
+  useEffect(() => {
+    console.log('[App] State update:', {
+      currentExerciseIndex,
+      selectedAnswer,
+      showFeedback,
+      isCorrect,
+      isTimerActive,
+      timeLeft
+    });
+  }, [currentExerciseIndex, selectedAnswer, showFeedback, isCorrect, isTimerActive, timeLeft]);
+
+  if (loading) {
+    console.log('[App] Rendering loading state');
+    return <div className="text-center">Loading...</div>;
+  }
+  
+  if (error) {
+    console.log('[App] Rendering error state:', error);
+    return <div className="text-center text-red-500">Error: {error}</div>;
+  }
+  
+  if (!exercises.length) {
+    console.log('[App] No exercises available');
+    return <div className="text-center">No exercises found</div>;
+  }
 
   const currentExercise = exercises[currentExerciseIndex];
-  const progress = exercises.length
-    ? ((currentExerciseIndex + 1) / exercises.length) * 100
-    : 0;
 
   return (
-    <Layout progress={progress}>
-      {/* Exercise Content */}
+    <Layout
+      timeLimit={currentExercise.timeLimit}
+      isActive={isTimerActive}
+      onTimeUp={handleTimeUp}
+    >
       <MCQExercise
         question={currentExercise}
         onAnswer={handleAnswer}
         selectedAnswer={selectedAnswer}
+        disabled={!isTimerActive}
       />
 
-      {/* Feedback Section */}
       {showFeedback && selectedAnswer && (
         <div className="mt-6">
           <Feedback

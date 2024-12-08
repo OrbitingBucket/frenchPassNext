@@ -19,7 +19,7 @@ router.get('/exercises', async (req, res) => {
     });
 
     // Remove correct answers from response
-    const safeExercises = exercises.map(({ correct_answer, ...exercise }) => exercise);
+    const safeExercises = exercises.map(({ correctAnswer, ...exercise }) => exercise);
     
     res.json(safeExercises);
   } catch (error) {

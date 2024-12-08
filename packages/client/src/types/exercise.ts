@@ -8,9 +8,9 @@ export interface Exercise {
   instruction: string;
   sentence: string;
   options: Record<string, string>;
-  correctAnswer: string;  // changed from correct_answer
+  correctAnswer: string;
   feedback: Record<string, string>;
   points: number;
-  timeLimit: number;  // changed from time_limit
+  timeLimit: number;
   tags: string[];
 }
