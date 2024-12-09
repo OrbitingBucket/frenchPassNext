@@ -1,35 +1,52 @@
 // src/components/exercise/MCQExercise.tsx
 import React, { useEffect } from 'react';
 import { Exercise } from '../../types/exercise';
+import { useTimer } from '../../contexts/TimerContext';
 
 interface MCQExerciseProps {
   question: Exercise;
   selectedAnswer: string | null;
   onAnswer: (answer: string) => void;
-  disabled: boolean;
+  showFeedback: boolean;
+  isTimeUp: boolean;
+  correctAnswer: string | null;
 }
 
 const MCQExercise: React.FC<MCQExerciseProps> = ({ 
   question, 
   selectedAnswer, 
   onAnswer,
-  disabled 
+  showFeedback,
+  isTimeUp,
+  correctAnswer
 }) => {
+  const { state, startTimer, stopTimer } = useTimer();
+
   useEffect(() => {
-    console.log('[MCQExercise] Rendered with:', {
-      questionId: question.id,
-      selectedAnswer,
-      disabled
-    });
-  }, [question.id, selectedAnswer, disabled]);
+    startTimer(question.timeLimit);
+    return () => stopTimer();
+  }, [question.id, startTimer, stopTimer]);
 
   const handleAnswerClick = (key: string) => {
-    console.log('[MCQExercise] Answer clicked:', {
-      key,
-      disabled,
-      currentlySelected: selectedAnswer
-    });
+    if (!state.isRunning || showFeedback || isTimeUp) return;
+    stopTimer();
     onAnswer(key);
+  };
+
+  const getButtonClassName = (key: string) => {
+    const baseClass = "w-full p-4 text-left rounded-lg border-2 transition-colors";
+    const disabledClass = (showFeedback || isTimeUp) ? 'opacity-50 cursor-not-allowed' : '';
+    
+    if (showFeedback || isTimeUp) {
+      if (key === correctAnswer) {
+        return `${baseClass} ${disabledClass} border-success-500 bg-success-50`;
+      }
+      if (key === selectedAnswer && key !== correctAnswer) {
+        return `${baseClass} ${disabledClass} border-error-500 bg-error-50`;
+      }
+    }
+    
+    return `${baseClass} ${disabledClass} border-gray-200 hover:border-primary-500`;
   };
 
   return (
@@ -54,21 +71,8 @@ const MCQExercise: React.FC<MCQExerciseProps> = ({
           <button
             key={key}
             onClick={() => handleAnswerClick(key)}
-            disabled={disabled || selectedAnswer !== null}
-            className={`w-full p-4 text-left rounded-lg border-2 transition-colors
-              ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-              ${
-                selectedAnswer === key
-                  ? selectedAnswer === question.correctAnswer
-                    ? 'border-success-500 bg-success-50'
-                    : 'border-error-500 bg-error-50'
-                  : 'border-gray-200 hover:border-primary-500'
-              }
-              ${
-                selectedAnswer !== null && key === question.correctAnswer
-                  ? 'border-success-500 bg-success-50'
-                  : ''
-              }`}
+            disabled={showFeedback || isTimeUp}
+            className={getButtonClassName(key)}
           >
             {value}
           </button>

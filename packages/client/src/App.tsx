@@ -6,6 +6,7 @@ import MCQExercise from './components/exercise/MCQExercise';
 import Feedback from './components/exercise/Feedback';
 import { Exercise } from './types/exercise';
 import { exerciseService } from './services/exerciseService';
+import { TimerProvider } from './contexts/TimerContext';
 
 function App() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -15,8 +16,7 @@ function App() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [isTimerActive, setIsTimerActive] = useState(true);
+  const [isTimeUp, setIsTimeUp] = useState(false);
 
   useEffect(() => {
     loadExercises();
@@ -34,120 +34,78 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (exercises[currentExerciseIndex]) {
-      const newTimeLimit = exercises[currentExerciseIndex].timeLimit;
-      console.log('[App] Starting new exercise:', {
-        index: currentExerciseIndex,
-        timeLimit: newTimeLimit
-      });
-      setTimeLeft(newTimeLimit);
-      setIsTimerActive(true);
-      setSelectedAnswer(null); // Reset selected answer
-      setShowFeedback(false); // Reset feedback
-      setIsCorrect(null); // Reset correct state
-    }
-  }, [currentExerciseIndex, exercises]);
-
   const handleTimeUp = useCallback(() => {
-    setIsTimerActive(false);
-    setShowFeedback(true);
     const currentExercise = exercises[currentExerciseIndex];
+    setIsTimeUp(true);
     setSelectedAnswer(currentExercise.correctAnswer);
     setIsCorrect(false);
   }, [currentExerciseIndex, exercises]);
 
   const handleAnswer = (answer: string) => {
-    if (!exercises[currentExerciseIndex] || !isTimerActive) {
-      console.log('[App] Answer rejected:', { isTimerActive, answer });
-      return;
-    }
-
-    console.log('[App] Answer selected:', {
-      answer,
-      exerciseId: exercises[currentExerciseIndex].id
-    });
-
-    setIsTimerActive(false);
+    if (isTimeUp) return; // Prevent answering if time is up
+    
+    const currentExercise = exercises[currentExerciseIndex];
     setSelectedAnswer(answer);
-    const correct = answer === exercises[currentExerciseIndex].correctAnswer;
-    console.log('[App] Answer evaluation:', { correct });
+    const correct = answer === currentExercise.correctAnswer;
     setIsCorrect(correct);
     setShowFeedback(true);
   };
 
   const handleNext = () => {
     if (currentExerciseIndex < exercises.length - 1) {
-      console.log('[App] Moving to next exercise:', {
-        current: currentExerciseIndex,
-        next: currentExerciseIndex + 1,
-        totalExercises: exercises.length
-      });
       setCurrentExerciseIndex(prev => prev + 1);
-    } else {
-      console.log('[App] Reached end of exercises');
+      setSelectedAnswer(null);
+      setShowFeedback(false);
+      setIsCorrect(null);
+      setIsTimeUp(false);
     }
   };
 
   useEffect(() => {
-    console.log('[App] State update:', {
-      currentExerciseIndex,
-      selectedAnswer,
-      showFeedback,
-      isCorrect,
-      isTimerActive,
-      timeLeft
-    });
-  }, [currentExerciseIndex, selectedAnswer, showFeedback, isCorrect, isTimerActive, timeLeft]);
+    // Reset states when moving to a new exercise
+    setSelectedAnswer(null);
+    setShowFeedback(false);
+    setIsCorrect(null);
+    setIsTimeUp(false);
+  }, [currentExerciseIndex]);
 
-  if (loading) {
-    console.log('[App] Rendering loading state');
-    return <div className="text-center">Loading...</div>;
-  }
-  
-  if (error) {
-    console.log('[App] Rendering error state:', error);
-    return <div className="text-center text-red-500">Error: {error}</div>;
-  }
-  
-  if (!exercises.length) {
-    console.log('[App] No exercises available');
-    return <div className="text-center">No exercises found</div>;
-  }
+  if (loading) return <div className="text-center">Loading...</div>;
+  if (error) return <div className="text-center text-red-500">Error: {error}</div>;
+  if (!exercises.length) return <div className="text-center">No exercises found</div>;
 
   const currentExercise = exercises[currentExerciseIndex];
 
   return (
-    <Layout
-      timeLimit={currentExercise.timeLimit}
-      isActive={isTimerActive}
-      onTimeUp={handleTimeUp}
-    >
-      <MCQExercise
-        question={currentExercise}
-        onAnswer={handleAnswer}
-        selectedAnswer={selectedAnswer}
-        disabled={!isTimerActive}
-      />
+    <TimerProvider onTimeUp={handleTimeUp}>
+      <Layout>
+        <MCQExercise
+          question={currentExercise}
+          onAnswer={handleAnswer}
+          selectedAnswer={selectedAnswer}
+          showFeedback={showFeedback}
+          isTimeUp={isTimeUp}
+          correctAnswer={showFeedback ? currentExercise.correctAnswer : null}
+        />
 
-      {showFeedback && selectedAnswer && (
-        <div className="mt-6">
-          <Feedback
-            isCorrect={isCorrect}
-            feedback={currentExercise.feedback[selectedAnswer]}
-          />
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleNext}
-              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors disabled:bg-primary-300"
-              disabled={currentExerciseIndex === exercises.length - 1}
-            >
-              Next Exercise
-            </button>
+        {showFeedback && selectedAnswer && ( // Added selectedAnswer check to prevent feedback on time up
+          <div className="mt-6">
+            <Feedback
+              isCorrect={isCorrect}
+              feedback={currentExercise.feedback[selectedAnswer]}
+            />
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handleNext}
+                className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors disabled:bg-primary-300"
+                disabled={currentExerciseIndex === exercises.length - 1}
+              >
+                Next Exercise
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </Layout>
+        )}
+      </Layout>
+    </TimerProvider>
   );
 }
 

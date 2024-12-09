@@ -79,3 +79,14 @@
 	
 2024-12-08 08:38:28.604 CET [13620] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
 	
+2024-12-08 09:15:45.071 CET [31552] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-08 09:15:45.071 CET [15644] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-09 06:03:56.340 CET [14988] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-09 06:16:06.173 CET [29760] LOG:  could not reserve shared memory region (addr=000001C9DBF50000) for child 00000000000012B4: error code 487
+2024-12-09 06:35:13.903 CET [14408] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-09 06:35:13.903 CET [51660] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
