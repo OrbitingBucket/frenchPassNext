@@ -34,6 +34,10 @@ router.post('/exercises/:id/verify', async (req, res) => {
     const { id } = req.params;
     const { answer } = req.body;
 
+    if (!answer) {
+      return res.status(400).json({ error: 'Answer is required' });
+    }
+
     const exercise = await prisma.exercise.findUnique({
       where: { id }
     });
@@ -42,12 +46,11 @@ router.post('/exercises/:id/verify', async (req, res) => {
       return res.status(404).json({ error: 'Exercise not found' });
     }
 
-    const isCorrect = answer === exercise.correct_answer;
-    const feedback = exercise.feedback as Record<string, string>;
+    const isCorrect = answer === exercise.correctAnswer;
     
     res.json({
       isCorrect,
-      feedback: feedback[answer],
+      feedback: exercise.feedback[answer],
       points: isCorrect ? exercise.points : 0
     });
   } catch (error) {

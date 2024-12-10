@@ -38,17 +38,24 @@ function App() {
     const currentExercise = exercises[currentExerciseIndex];
     setIsTimeUp(true);
     setSelectedAnswer(currentExercise.correctAnswer);
+    setShowFeedback(true);
     setIsCorrect(false);
   }, [currentExerciseIndex, exercises]);
 
-  const handleAnswer = (answer: string) => {
-    if (isTimeUp) return; // Prevent answering if time is up
+  const handleAnswer = async (answer: string) => {
+    if (isTimeUp) return;
     
     const currentExercise = exercises[currentExerciseIndex];
     setSelectedAnswer(answer);
-    const correct = answer === currentExercise.correctAnswer;
-    setIsCorrect(correct);
-    setShowFeedback(true);
+    
+    try {
+      const result = await exerciseService.verifyAnswer(currentExercise.id, answer);
+      setIsCorrect(result.isCorrect);
+      setShowFeedback(true);
+    } catch (error) {
+      console.error('Error verifying answer:', error);
+      // Handle error appropriately
+    }
   };
 
   const handleNext = () => {
@@ -84,7 +91,7 @@ function App() {
           selectedAnswer={selectedAnswer}
           showFeedback={showFeedback}
           isTimeUp={isTimeUp}
-          correctAnswer={showFeedback ? currentExercise.correctAnswer : null}
+          correctAnswer={isCorrect ? selectedAnswer : null}  
         />
 
         {showFeedback && selectedAnswer && ( // Added selectedAnswer check to prevent feedback on time up
@@ -93,13 +100,13 @@ function App() {
               isCorrect={isCorrect}
               feedback={currentExercise.feedback[selectedAnswer]}
             />
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 flex justify-start">
               <button
                 onClick={handleNext}
                 className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors disabled:bg-primary-300"
                 disabled={currentExerciseIndex === exercises.length - 1}
               >
-                Next Exercise
+                Next
               </button>
             </div>
           </div>

@@ -2,11 +2,12 @@
 import React, { useEffect } from 'react';
 import { Exercise } from '../../types/exercise';
 import { useTimer } from '../../contexts/TimerContext';
+import classNames from 'classnames'; // Consider adding this package for better class handling
 
 interface MCQExerciseProps {
   question: Exercise;
-  selectedAnswer: string | null;
   onAnswer: (answer: string) => void;
+  selectedAnswer: string | null;
   showFeedback: boolean;
   isTimeUp: boolean;
   correctAnswer: string | null;
@@ -34,19 +35,39 @@ const MCQExercise: React.FC<MCQExerciseProps> = ({
   };
 
   const getButtonClassName = (key: string) => {
-    const baseClass = "w-full p-4 text-left rounded-lg border-2 transition-colors";
-    const disabledClass = (showFeedback || isTimeUp) ? 'opacity-50 cursor-not-allowed' : '';
+    const baseClasses = "w-full p-4 text-left rounded-lg border-2 transition-colors";
     
+    // If feedback is shown (answer selected) or time is up
     if (showFeedback || isTimeUp) {
+      // Correct answer - always show in green
       if (key === correctAnswer) {
-        return `${baseClass} ${disabledClass} border-success-500 bg-success-50`;
+        return classNames(baseClasses, 
+          "border-success-500 bg-success-50 text-success-700",
+          "ring-2 ring-success-500 ring-opacity-50"
+        );
       }
+      
+      // Selected wrong answer - show in red
       if (key === selectedAnswer && key !== correctAnswer) {
-        return `${baseClass} ${disabledClass} border-error-500 bg-error-50`;
+        return classNames(baseClasses,
+          "border-error-500 bg-error-50 text-error-700",
+          "ring-2 ring-error-500 ring-opacity-50"
+        );
       }
+      
+      // Non-selected answers - show as disabled
+      return classNames(baseClasses,
+        "border-neutral-200 bg-neutral-50 text-neutral-500",
+        "opacity-50 cursor-not-allowed"
+      );
     }
-    
-    return `${baseClass} ${disabledClass} border-gray-200 hover:border-primary-500`;
+
+    // Default state (no feedback shown)
+    return classNames(baseClasses,
+      "border-neutral-200 hover:border-primary-500",
+      "bg-white hover:bg-primary-50",
+      "cursor-pointer"
+    );
   };
 
   return (
@@ -58,7 +79,7 @@ const MCQExercise: React.FC<MCQExerciseProps> = ({
               <React.Fragment key={index}>
                 <span className="inline-block">{part}</span>
                 {index < array.length - 1 && (
-                  <span className="inline-block mx-2 w-16 border-b border-black text-center" />
+                  <span className="inline-block mx-2 w-16 border-b-2 border-neutral-400" />
                 )}
               </React.Fragment>
             ))}
@@ -74,12 +95,41 @@ const MCQExercise: React.FC<MCQExerciseProps> = ({
             disabled={showFeedback || isTimeUp}
             className={getButtonClassName(key)}
           >
-            {value}
+            <div className="flex items-center">
+              <span className="flex-grow">{value}</span>
+              {(showFeedback || isTimeUp) && (
+                <>
+                  {key === correctAnswer && (
+                    <span className="ml-2 text-success-600">
+                      <CheckIcon className="h-5 w-5" />
+                    </span>
+                  )}
+                  {key === selectedAnswer && key !== correctAnswer && (
+                    <span className="ml-2 text-error-600">
+                      <XIcon className="h-5 w-5" />
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
           </button>
         ))}
       </div>
     </div>
   );
 };
+
+// Simple icons components (you can use any icon library you prefer)
+const CheckIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+);
+
+const XIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
 
 export default MCQExercise;

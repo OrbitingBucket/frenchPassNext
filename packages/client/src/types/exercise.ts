@@ -8,9 +8,14 @@ export interface Exercise {
   instruction: string;
   sentence: string;
   options: Record<string, string>;
-  correctAnswer: string;
   feedback: Record<string, string>;
   points: number;
   timeLimit: number;
   tags: string[];
+}
+
+export interface VerificationResponse {
+  isCorrect: boolean;
+  feedback: string;
+  points: number;
 }
