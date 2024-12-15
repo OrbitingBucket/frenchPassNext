@@ -1,135 +1,181 @@
-// src/components/exercise/MCQExercise.tsx
-import React, { useEffect } from 'react';
-import { Exercise } from '../../types/exercise';
+// components/exercise/MCQExercise.tsx
+import React from 'react';
+import { MCQExercise as MCQExerciseType, ExerciseResult, ExerciseStatus, MCQExerciseState, ExerciseState } from '../../types/exercise';
+import { useExercise } from '../../hooks/useExercise';
 import { useTimer } from '../../contexts/TimerContext';
-import classNames from 'classnames'; // Consider adding this package for better class handling
+import { Button } from '../common/Button';
+import Feedback from './Feedback';
 
 interface MCQExerciseProps {
-  question: Exercise;
-  onAnswer: (answer: string) => void;
-  selectedAnswer: string | null;
-  showFeedback: boolean;
-  isTimeUp: boolean;
-  correctAnswer: string | null;
+  exercise: MCQExerciseType;
+  onComplete: (result: ExerciseResult) => Promise<{ isCorrect: boolean; points: number; correctAnswer: string; feedback: string; isTimeout?: boolean } | null>;
+  onNext: () => void;
 }
 
-const MCQExercise: React.FC<MCQExerciseProps> = ({ 
-  question, 
-  selectedAnswer, 
-  onAnswer,
-  showFeedback,
-  isTimeUp,
-  correctAnswer
+export const MCQExercise: React.FC<MCQExerciseProps> = ({ 
+  exercise, 
+  onComplete,
+  onNext 
 }) => {
-  const { state, startTimer, stopTimer } = useTimer();
+  const { state, setAnswer, setStatus } = useExercise();
+  const { stopTimer, state: timerState } = useTimer();
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [serverCorrectAnswer, setServerCorrectAnswer] = React.useState<string | null>(null);
+  const [serverFeedback, setServerFeedback] = React.useState<string | null>(null);
+  const [isTimeout, setIsTimeout] = React.useState(false);
 
-  useEffect(() => {
-    startTimer(question.timeLimit);
-    return () => stopTimer();
-  }, [question.id, startTimer, stopTimer]);
+  // Handle timer expiration
+  React.useEffect(() => {
+    if (timerState.isExpired && state?.status === ExerciseStatus.IN_PROGRESS) {
+      handleTimeUp();
+    }
+  }, [timerState.isExpired, state?.status]);
 
-  const handleAnswerClick = (key: string) => {
-    if (!state.isRunning || showFeedback || isTimeUp) return;
+  const handleTimeUp = async () => {
+    setStatus(ExerciseStatus.TIMER_EXPIRED);
+    
+    // Create result for timer expiration
+    const result: ExerciseResult = {
+      exerciseId: exercise.id,
+      type: 'mcq',
+      isCorrect: false,
+      selectedAnswer: '',
+      timeTaken: exercise.timeLimit,
+      points: 0
+    };
+
+    try {
+      const verification = await onComplete(result);
+      if (verification) {
+        setServerCorrectAnswer(verification.correctAnswer);
+        setServerFeedback(verification.feedback);
+        setIsTimeout(verification.isTimeout || false);
+        setAnswer('', false, 0); // Empty answer for timer expiration
+      }
+    } catch (error) {
+      console.error('Error processing timer expiration:', error);
+    }
+  };
+
+  const handleAnswerClick = async (selectedKey: string) => {
+    if (state?.status !== ExerciseStatus.IN_PROGRESS || isProcessing) return;
+
+    setIsProcessing(true);
     stopTimer();
-    onAnswer(key);
+    setStatus(ExerciseStatus.ANSWERED);
+    
+    const result: ExerciseResult = {
+      exerciseId: exercise.id,
+      type: 'mcq',
+      isCorrect: false,
+      selectedAnswer: selectedKey,
+      timeTaken: exercise.timeLimit - (state?.timeRemaining || 0),
+      points: 0
+    };
+
+    try {
+      const verification = await onComplete(result);
+      
+      if (verification) {
+        setServerCorrectAnswer(verification.correctAnswer);
+        setServerFeedback(verification.feedback);
+        setIsTimeout(verification.isTimeout || false);
+        setAnswer(selectedKey, verification.isCorrect, verification.points);
+        setStatus(ExerciseStatus.COMPLETED);
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const isMCQState = (state: ExerciseState): state is MCQExerciseState => {
+    return 'selectedAnswer' in state;
   };
 
   const getButtonClassName = (key: string) => {
-    const baseClasses = "w-full p-4 text-left rounded-lg border-2 transition-colors";
+    const baseClass = "w-full p-4 text-left rounded-lg border-2 transition-colors";
     
-    // If feedback is shown (answer selected) or time is up
-    if (showFeedback || isTimeUp) {
-      // Correct answer - always show in green
-      if (key === correctAnswer) {
-        return classNames(baseClasses, 
-          "border-success-500 bg-success-50 text-success-700",
-          "ring-2 ring-success-500 ring-opacity-50"
-        );
-      }
-      
-      // Selected wrong answer - show in red
-      if (key === selectedAnswer && key !== correctAnswer) {
-        return classNames(baseClasses,
-          "border-error-500 bg-error-50 text-error-700",
-          "ring-2 ring-error-500 ring-opacity-50"
-        );
-      }
-      
-      // Non-selected answers - show as disabled
-      return classNames(baseClasses,
-        "border-neutral-200 bg-neutral-50 text-neutral-500",
-        "opacity-50 cursor-not-allowed"
-      );
+    if (!state || state.status === ExerciseStatus.IN_PROGRESS) {
+      return `${baseClass} border-gray-200 hover:border-primary-500 hover:bg-gray-50`;
     }
 
-    // Default state (no feedback shown)
-    return classNames(baseClasses,
-      "border-neutral-200 hover:border-primary-500",
-      "bg-white hover:bg-primary-50",
-      "cursor-pointer"
-    );
+    if (!isMCQState(state)) {
+      console.error('Invalid state type for MCQ exercise');
+      return baseClass;
+    }
+
+    const isAnswered = state.status === ExerciseStatus.ANSWERED || 
+                      state.status === ExerciseStatus.COMPLETED;
+    const isTimeUp = state.status === ExerciseStatus.TIMER_EXPIRED;
+
+    // Base disabled style
+    const className = `${baseClass} cursor-not-allowed`;
+
+    // If timer expired or answer submitted
+    if (isTimeUp || isAnswered) {
+      // If this is the correct answer (from server)
+      if (serverCorrectAnswer && key === serverCorrectAnswer) {
+        return `${className} border-success-500 bg-success-50 text-success-700`;
+      }
+
+      // If this is the selected answer and it's wrong
+      if (key === state.selectedAnswer && !state.isCorrect) {
+        return `${className} border-error-500 bg-error-50 text-error-700`;
+      }
+
+      // Other options
+      return `${className} border-gray-200 bg-gray-100 opacity-50`;
+    }
+
+    return `${baseClass} border-gray-200`;
   };
+
+  if (!state) return null;
 
   return (
     <div className="space-y-8">
       <div className="space-y-4">
         <div className="w-full">
           <p className="text-xl text-gray-800 whitespace-pre-wrap break-words leading-relaxed">
-            {question.sentence.split('___').map((part, index, array) => (
-              <React.Fragment key={index}>
-                <span className="inline-block">{part}</span>
-                {index < array.length - 1 && (
-                  <span className="inline-block mx-2 w-16 border-b-2 border-neutral-400" />
-                )}
-              </React.Fragment>
-            ))}
+            {exercise.sentence}
           </p>
         </div>
       </div>
 
       <div className="grid gap-3">
-        {Object.entries(question.options).map(([key, value]) => (
+        {Object.entries(exercise.options).map(([key, value]) => (
           <button
             key={key}
             onClick={() => handleAnswerClick(key)}
-            disabled={showFeedback || isTimeUp}
+            disabled={state.status !== ExerciseStatus.IN_PROGRESS || isProcessing}
             className={getButtonClassName(key)}
+            aria-disabled={state.status !== ExerciseStatus.IN_PROGRESS || isProcessing}
           >
-            <div className="flex items-center">
-              <span className="flex-grow">{value}</span>
-              {(showFeedback || isTimeUp) && (
-                <>
-                  {key === correctAnswer && (
-                    <span className="ml-2 text-success-600">
-                      <CheckIcon className="h-5 w-5" />
-                    </span>
-                  )}
-                  {key === selectedAnswer && key !== correctAnswer && (
-                    <span className="ml-2 text-error-600">
-                      <XIcon className="h-5 w-5" />
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
+            {value}
           </button>
         ))}
       </div>
+
+      <Feedback 
+        exercise={exercise} 
+        serverFeedback={serverFeedback || undefined}
+        isTimeout={isTimeout}
+      />
+
+      {(state.status === ExerciseStatus.ANSWERED || 
+        state.status === ExerciseStatus.COMPLETED ||
+        state.status === ExerciseStatus.TIMER_EXPIRED) && (
+        <div className="mt-6">
+          <Button
+            onClick={onNext}
+            className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
-
-// Simple icons components (you can use any icon library you prefer)
-const CheckIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-  </svg>
-);
-
-const XIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
 
 export default MCQExercise;

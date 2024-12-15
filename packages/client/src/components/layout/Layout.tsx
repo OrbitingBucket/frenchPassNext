@@ -1,8 +1,7 @@
 // src/components/layout/Layout.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import NavBar from '../navigation/NavBar';
 import { Timer, TimerBar } from '../exercise/Timer';
-import { useTimer } from '../../contexts/TimerContext';
 
 interface LayoutProps {
   children: React.ReactNode;

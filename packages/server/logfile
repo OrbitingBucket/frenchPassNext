@@ -125,3 +125,96 @@
 	
 2024-12-10 06:38:34.449 CET [41992] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
 	
+2024-12-10 06:40:38.840 CET [49564] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-10 06:40:38.841 CET [26444] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-11 19:37:13.545 CET [29760] LOG:  could not reserve shared memory region (addr=000001C9DBF50000) for child 0000000000001054: error code 487
+2024-12-13 06:23:02.528 CET [19868] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-13 06:23:02.557 CET [15356] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 06:46:20.480 CET [27440] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 06:46:20.480 CET [51528] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 06:51:02.473 CET [31492] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 06:51:02.474 CET [8092] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:00:34.061 CET [45624] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:00:34.061 CET [49476] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:29:06.662 CET [4176] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:29:06.662 CET [14816] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:30:24.591 CET [316] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:32:15.741 CET [10728] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:32:15.741 CET [32204] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:40:15.909 CET [44028] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:40:15.910 CET [55664] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:42:39.146 CET [54316] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:43:24.207 CET [18288] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:48:58.886 CET [31452] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:48:58.886 CET [29088] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:54:11.069 CET [32100] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 07:54:11.069 CET [41440] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:04:15.052 CET [29424] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:04:15.052 CET [30620] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:19:52.590 CET [37288] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:19:52.592 CET [42536] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:30:55.361 CET [8296] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:30:55.361 CET [53240] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:32:50.972 CET [8800] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:32:50.973 CET [57196] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:50:34.032 CET [25648] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:50:34.032 CET [50160] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:59:08.585 CET [53528] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 08:59:08.586 CET [44400] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:01:56.525 CET [13968] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:01:56.525 CET [42528] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:03:19.757 CET [19148] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:04:28.564 CET [41516] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:04:28.566 CET [29100] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:07:50.230 CET [32472] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:07:50.230 CET [52580] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:10:32.726 CET [29332] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:10:32.726 CET [31468] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:23:09.137 CET [53204] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-15 09:23:09.137 CET [50832] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	

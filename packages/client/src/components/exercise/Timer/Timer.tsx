@@ -6,15 +6,21 @@ const Timer: React.FC = () => {
   const { state } = useTimer();
   
   const formatTime = (seconds: number): string => {
-    return `Temps restant: ${Math.ceil(seconds)} sec`;
+    const roundedSeconds = Math.ceil(seconds);
+    const minutes = Math.floor(roundedSeconds / 60);
+    const remainingSeconds = roundedSeconds % 60;
+    
+    if (minutes > 0) {
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+    return `${remainingSeconds}s`;
   };
 
   return (
     <div 
-      className={`text-base font-medium px-4 py-2 rounded-lg 
-        ${state.isExpired ? 'bg-red-100' : 'bg-transparent'}`}
+      className="text-base font-medium px-4 py-2 rounded-lg text-gray-700"
     >
-      {formatTime(state.timeRemaining)}
+      Temps restant: {formatTime(state.timeRemaining)}
     </div>
   );
 };

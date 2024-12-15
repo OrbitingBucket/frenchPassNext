@@ -7,14 +7,12 @@ const TimerBar: React.FC = () => {
   const progress = (state.timeRemaining / state.timeLimit) * 100;
   
   return (
-    <div 
-      className={`w-full h-2 rounded-full ${state.isExpired ? 'bg-red-200' : 'bg-gray-200'}`}
-    >
+    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
       <div
-        className="h-full bg-blue-200 rounded-full transition-all"
+        className={`h-full transition-all duration-200 ease-linear rounded-full
+          ${state.isExpired ? 'bg-error-500' : 'bg-primary-500'}`}
         style={{ 
-          width: `${state.isExpired ? 0 : progress}%`,
-          transition: 'width 0.1s linear'
+          width: `${Math.max(0, progress)}%`,
         }}
       />
     </div>

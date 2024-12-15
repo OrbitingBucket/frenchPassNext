@@ -1,22 +1,26 @@
 // packages/client/src/App.tsx
-
 import { useState, useEffect, useCallback } from 'react';
 import Layout from './components/layout/Layout';
-import MCQExercise from './components/exercise/MCQExercise';
-import Feedback from './components/exercise/Feedback';
-import { Exercise } from './types/exercise';
+import { BaseExercise } from './components/exercise/BaseExercise';
+import { Exercise, ExerciseResult } from './types/exercise';
 import { exerciseService } from './services/exerciseService';
 import { TimerProvider } from './contexts/TimerContext';
+import { ExerciseProvider } from './contexts/ExerciseContext';
+
+interface VerificationResponse {
+  isCorrect: boolean;
+  points: number;
+  correctAnswer: string;
+  feedback: string;
+  isTimeout?: boolean;
+}
 
 function App() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [results, setResults] = useState<ExerciseResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isTimeUp, setIsTimeUp] = useState(false);
 
   useEffect(() => {
     loadExercises();
@@ -27,54 +31,93 @@ function App() {
       setLoading(true);
       const fetchedExercises = await exerciseService.getExercises();
       setExercises(fetchedExercises);
-    } catch (err) {
+    } catch (error) {
+      console.error('Failed to load exercises:', error);
       setError('Failed to load exercises');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTimeUp = useCallback(() => {
-    const currentExercise = exercises[currentExerciseIndex];
-    setIsTimeUp(true);
-    setSelectedAnswer(currentExercise.correctAnswer);
-    setShowFeedback(true);
-    setIsCorrect(false);
-  }, [currentExerciseIndex, exercises]);
-
-  const handleAnswer = async (answer: string) => {
-    if (isTimeUp) return;
-    
-    const currentExercise = exercises[currentExerciseIndex];
-    setSelectedAnswer(answer);
-    
+  const handleExerciseComplete = async (result: ExerciseResult) => {
     try {
-      const result = await exerciseService.verifyAnswer(currentExercise.id, answer);
-      setIsCorrect(result.isCorrect);
-      setShowFeedback(true);
+      console.log('Processing exercise result:', result);
+      const verification = await exerciseService.processExerciseAnswer(result);
+      console.log('Received verification:', verification);
+      
+      // Update the result with the server verification
+      const updatedResult: ExerciseResult = {
+        ...result,
+        isCorrect: verification.isCorrect,
+        points: verification.points
+      };
+
+      console.log('Updated result:', updatedResult);
+      setResults(prev => [...prev, updatedResult]);
+
+      // Return the verification to update the exercise state
+      return {
+        isCorrect: verification.isCorrect,
+        points: verification.points,
+        correctAnswer: verification.correctAnswer,
+        feedback: verification.feedback,
+        isTimeout: verification.isTimeout
+      };
     } catch (error) {
-      console.error('Error verifying answer:', error);
-      // Handle error appropriately
+      console.error('Error processing exercise result:', error);
+      return null;
     }
   };
 
   const handleNext = () => {
     if (currentExerciseIndex < exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
-      setSelectedAnswer(null);
-      setShowFeedback(false);
-      setIsCorrect(null);
-      setIsTimeUp(false);
+    } else {
+      // Handle quiz completion
+      handleQuizComplete();
     }
   };
 
-  useEffect(() => {
-    // Reset states when moving to a new exercise
-    setSelectedAnswer(null);
-    setShowFeedback(false);
-    setIsCorrect(null);
-    setIsTimeUp(false);
-  }, [currentExerciseIndex]);
+  const handleQuizComplete = () => {
+    // Calculate final score
+    const totalScore = results.reduce((sum, result) => sum + result.points, 0);
+    const totalPossibleScore = exercises.reduce((sum, exercise) => sum + exercise.points, 0);
+    
+    console.log('Quiz completed!');
+    console.log(`Final score: ${totalScore}/${totalPossibleScore}`);
+    // Here you could navigate to a results page or show a summary
+  };
+
+  const handleTimeUp = useCallback(() => {
+    // When timer expires, submit a blank answer to get the correct answer
+    const currentExercise = exercises[currentExerciseIndex];
+    if (currentExercise) {
+      let result: ExerciseResult;
+
+      if (currentExercise.type === 'mcq') {
+        result = {
+          exerciseId: currentExercise.id,
+          type: 'mcq',
+          isCorrect: false,
+          selectedAnswer: '',
+          timeTaken: currentExercise.timeLimit,
+          points: 0
+        };
+      } else {
+        result = {
+          exerciseId: currentExercise.id,
+          type: 'fillInGap',
+          isCorrect: false,
+          userInput: '',
+          timeTaken: currentExercise.timeLimit,
+          points: 0
+        };
+      }
+
+      // Process the result through the server to get the correct answer
+      handleExerciseComplete(result);
+    }
+  }, [currentExerciseIndex, exercises, handleExerciseComplete]);
 
   if (loading) return <div className="text-center">Loading...</div>;
   if (error) return <div className="text-center text-red-500">Error: {error}</div>;
@@ -83,36 +126,23 @@ function App() {
   const currentExercise = exercises[currentExerciseIndex];
 
   return (
-    <TimerProvider onTimeUp={handleTimeUp}>
-      <Layout>
-        <MCQExercise
-          question={currentExercise}
-          onAnswer={handleAnswer}
-          selectedAnswer={selectedAnswer}
-          showFeedback={showFeedback}
-          isTimeUp={isTimeUp}
-          correctAnswer={isCorrect ? selectedAnswer : null}  
-        />
-
-        {showFeedback && selectedAnswer && ( // Added selectedAnswer check to prevent feedback on time up
-          <div className="mt-6">
-            <Feedback
-              isCorrect={isCorrect}
-              feedback={currentExercise.feedback[selectedAnswer]}
+    <ExerciseProvider>
+      <TimerProvider 
+        onTimeUp={handleTimeUp}
+        initialTimeLimit={currentExercise.timeLimit}
+        key={currentExercise.id} // Reset timer when exercise changes
+      >
+        <Layout>
+          <div className="max-w-2xl mx-auto p-4">
+            <BaseExercise
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+              onNext={handleNext}
             />
-            <div className="mt-4 flex justify-start">
-              <button
-                onClick={handleNext}
-                className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors disabled:bg-primary-300"
-                disabled={currentExerciseIndex === exercises.length - 1}
-              >
-                Next
-              </button>
-            </div>
           </div>
-        )}
-      </Layout>
-    </TimerProvider>
+        </Layout>
+      </TimerProvider>
+    </ExerciseProvider>
   );
 }
 

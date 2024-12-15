@@ -1,31 +1,63 @@
-// client/src/services/exerciseService.ts
-import axios from 'axios'
-import { Exercise } from '../types/exercise'
+// src/services/exerciseService.ts
+import { Exercise, ExerciseResult } from '../types/exercise';
+import api from './api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+interface VerificationResponse {
+  isCorrect: boolean;
+  points: number;
+  correctAnswer: string;
+  feedback: string;
+  isTimeout?: boolean;
+}
 
-export const exerciseService = {
-  async getExercises() {
+class ExerciseService {
+  async getExercises(): Promise<Exercise[]> {
     try {
-      const response = await axios.get<Exercise[]>(`${API_URL}/exercises`);
+      const response = await api.get('/exercises');
       return response.data;
     } catch (error) {
       console.error('Error fetching exercises:', error);
       throw error;
     }
-  },
+  }
 
-  async verifyAnswer(exerciseId: string, answer: string) {
+  async verifyAnswer(exerciseId: string, result: ExerciseResult): Promise<VerificationResponse> {
     try {
-      const response = await axios.post<{
-        isCorrect: boolean;
-        feedback: string;
-        points: number;
-      }>(`${API_URL}/exercises/${exerciseId}/verify`, { answer });
-      return response.data;
+      // Extract the answer from the result based on exercise type
+      const answer = result.type === 'mcq' 
+        ? result.selectedAnswer 
+        : result.userInput;
+
+      const response = await api.post(`/exercises/${exerciseId}/verify`, { answer });
+      
+      return {
+        isCorrect: response.data.isCorrect,
+        points: response.data.points,
+        correctAnswer: response.data.correctAnswer,
+        feedback: response.data.feedback,
+        isTimeout: response.data.isTimeout
+      };
     } catch (error) {
       console.error('Error verifying answer:', error);
       throw error;
     }
   }
-};
+
+  async processExerciseAnswer(result: ExerciseResult): Promise<VerificationResponse> {
+    try {
+      const verification = await this.verifyAnswer(result.exerciseId, result);
+      return {
+        isCorrect: verification.isCorrect,
+        points: verification.points,
+        correctAnswer: verification.correctAnswer,
+        feedback: verification.feedback,
+        isTimeout: verification.isTimeout
+      };
+    } catch (error) {
+      console.error('Error processing exercise answer:', error);
+      throw error;
+    }
+  }
+}
+
+export const exerciseService = new ExerciseService();

@@ -30,6 +30,9 @@ const initialState: TimerState = {
 };
 
 const timerReducer = (state: TimerState, action: TimerAction): TimerState => {
+  let newTimeRemaining: number;
+  let isExpired: boolean;
+
   switch (action.type) {
     case 'START':
       return {
@@ -47,9 +50,13 @@ const timerReducer = (state: TimerState, action: TimerAction): TimerState => {
     case 'RESET':
       return initialState;
     case 'UPDATE_TIME':
+      newTimeRemaining = Math.max(0, action.payload);
+      isExpired = newTimeRemaining === 0;
       return {
         ...state,
-        timeRemaining: Math.max(0, action.payload),
+        timeRemaining: newTimeRemaining,
+        isExpired,
+        isRunning: !isExpired,
       };
     case 'EXPIRE':
       return {
@@ -68,9 +75,10 @@ const TimerContext = createContext<TimerContextValue | undefined>(undefined);
 interface TimerProviderProps {
   children: React.ReactNode;
   onTimeUp: () => void;
+  initialTimeLimit: number;
 }
 
-export function TimerProvider({ children, onTimeUp }: TimerProviderProps) {
+export function TimerProvider({ children, onTimeUp, initialTimeLimit }: TimerProviderProps) {
   const [state, dispatch] = useReducer(timerReducer, initialState);
   const startTimeRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -130,6 +138,17 @@ export function TimerProvider({ children, onTimeUp }: TimerProviderProps) {
       }
     };
   }, [state.isRunning, state.timeLimit, onTimeUp]);
+
+  // Start timer with initialTimeLimit when provider mounts
+  useEffect(() => {
+    startTimer(initialTimeLimit);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [initialTimeLimit, startTimer]); // Run when initialTimeLimit changes
 
   const value = {
     state,
