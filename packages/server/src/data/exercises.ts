@@ -1,21 +1,53 @@
 // server/src/data/exercises.ts
-export interface Exercise {
+type MCQOptions = {
+  [key: string]: string;
+};
+
+type TextInputOptions = {
+  accepted: string[];
+  common_mistakes: {
+    [key: string]: string;
+  };
+};
+
+type MCQFeedback = {
+  [key: string]: string;
+};
+
+type TextInputFeedback = {
+  default: string;
+  hint: string;
+};
+
+export interface BaseExercise {
   id: string;
   category: string;
   subcategory: string;
-  type: 'mcq';
   difficultyLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
   instruction: string;
   sentence: string;
-  options: Record<string, string>;
-  correctAnswer: string;
-  feedback: Record<string, string>;
   points: number;
   timeLimit: number;
   tags: string[];
 }
+
+export interface MCQExercise extends BaseExercise {
+  type: 'mcq';
+  options: MCQOptions;
+  correctAnswer: string;
+  feedback: MCQFeedback;
+}
+
+export interface TextInputExercise extends BaseExercise {
+  type: 'text_input';
+  options: TextInputOptions;
+  correctAnswer: string;
+  feedback: TextInputFeedback;
+}
+
+export type Exercise = MCQExercise | TextInputExercise;
   
-  export const exercises: Exercise[] = [
+export const exercises: Exercise[] = [
         {
           "id": "test_gr_nom_genre_qcm_a1_001",
           "category": "nom",
@@ -48,7 +80,7 @@ export interface Exercise {
           "type": "mcq",
           "difficultyLevel": "A1",
           "instruction": "Choisissez l'article correct",
-          "sentence": "C’est ___ de magie qu’il a réalisé.",
+          "sentence": "C'est ___ de magie qu'il a réalisé.",
           "options": {
             "a": "une beau tour",
             "b": "un belle tour",
@@ -78,14 +110,14 @@ export interface Exercise {
             "a": "un œuvre",
             "b": "des œuvres",
             "c": "une œuvre",
-            "d": "l’œuvre"
+            "d": "l'œuvre"
           },
           "correctAnswer": "c",
           "feedback": {
             "a": "« Œuvre » est un nom féminin, donc l'article masculin « un » est incorrect. Il faut utiliser l'article féminin « une ».",
             "b": "« Des œuvres » est au pluriel, mais le contexte indique qu'il s'agit d'une seule œuvre. Il faut donc rester au singulier avec « une œuvre ».",
             "c": "« Une œuvre » est la forme correcte car « œuvre » est un nom féminin et singulier, nécessitant l'article féminin « une ».",
-            "d": "« L’œuvre » est correct si on parle d'une œuvre particulière, mais ici, on parle d'une œuvre parmi d'autres."
+            "d": "« L'œuvre » est correct si on parle d'une œuvre particulière, mais ici, on parle d'une œuvre parmi d'autres."
           },
           "points": 10,
           "timeLimit": 30,
@@ -115,5 +147,31 @@ export interface Exercise {
           "points": 10,
           "timeLimit": 30,
           "tags": ["article", "genre", "adjectif", "pluriel"]
+        },
+        {
+          "id": "test_gr_verbe_present_text_a1_001",
+          "category": "verbe",
+          "subcategory": "present",
+          "type": "text_input",
+          "difficultyLevel": "A1",
+          "instruction": "Conjuguez le verbe entre crochets au présent de l'indicatif",
+          "sentence": "Chaque matin, [je boire] un café avant d'aller travailler.",
+          "options": {
+            "accepted": ["je bois"],
+            "common_mistakes": {
+              "je boit": "C'est la forme pour il/elle/on. Avec 'je', on utilise 'bois'.",
+              "je boire": "C'est l'infinitif. Il faut conjuguer le verbe.",
+              "je bu": "C'est le participe passé. Ici, on utilise le présent.",
+              "bois": "N'oubliez pas le pronom personnel 'je'."
+            }
+          },
+          "correctAnswer": "je bois",
+          "feedback": {
+            "default": "Le verbe 'boire' se conjugue: je bois, tu bois, il/elle boit, nous buvons, vous buvez, ils/elles boivent",
+            "hint": "Pensez à la conjugaison irrégulière du verbe 'boire' au présent"
+          },
+          "points": 10,
+          "timeLimit": 30,
+          "tags": ["verbe", "présent", "irrégulier", "boire"]
         }
       ];

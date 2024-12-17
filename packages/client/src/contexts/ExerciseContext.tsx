@@ -1,7 +1,7 @@
 // src/contexts/ExerciseContext.tsx
 
 import React, { createContext, useReducer, ReactNode, useCallback } from 'react';
-import { Exercise, ExerciseState, ExerciseStatus, ExerciseResult } from '../types/exercise';
+import { Exercise, ExerciseState, ExerciseStatus, ExerciseResult, MCQExerciseState, TextInputExerciseState, MCQExerciseResult, TextInputExerciseResult } from '../types/exercise';
 
 interface ExerciseContextType {
   exercise: Exercise | null;
@@ -19,12 +19,25 @@ type ExerciseAction =
 
 export const ExerciseContext = createContext<ExerciseContextType | undefined>(undefined);
 
-const initialState: ExerciseState = {
-  status: ExerciseStatus.INITIAL,
-  timeRemaining: 0,
-  points: 0,
-  isCorrect: null,
-  selectedAnswer: null,
+const createInitialState = (type: 'mcq' | 'text_input'): ExerciseState => {
+  const baseState = {
+    status: ExerciseStatus.INITIAL,
+    timeRemaining: 0,
+    points: 0,
+    isCorrect: null,
+  };
+
+  if (type === 'mcq') {
+    return {
+      ...baseState,
+      selectedAnswer: null,
+    } as MCQExerciseState;
+  } else {
+    return {
+      ...baseState,
+      userInput: '',
+    } as TextInputExerciseState;
+  }
 };
 
 function exerciseReducer(state: ExerciseState, action: ExerciseAction): ExerciseState {
@@ -35,7 +48,7 @@ function exerciseReducer(state: ExerciseState, action: ExerciseAction): Exercise
   switch (action.type) {
     case 'SET_EXERCISE':
       return {
-        ...initialState,
+        ...createInitialState(action.payload.type),
         timeRemaining: action.payload.timeLimit,
         status: ExerciseStatus.IN_PROGRESS,
       };
@@ -45,27 +58,54 @@ function exerciseReducer(state: ExerciseState, action: ExerciseAction): Exercise
         timeRemaining: action.payload,
       };
     case 'SET_ANSWER':
-      return {
-        ...state,
-        selectedAnswer: action.payload.answer,
-        isCorrect: action.payload.isCorrect,
-        points: action.payload.points,
-        status: ExerciseStatus.COMPLETED,
-      };
+      if ('selectedAnswer' in state) {
+        // MCQ Exercise
+        return {
+          ...state,
+          selectedAnswer: action.payload.answer,
+          isCorrect: action.payload.isCorrect,
+          points: action.payload.points,
+          status: ExerciseStatus.COMPLETED,
+        } as MCQExerciseState;
+      } else {
+        // Text Input Exercise
+        return {
+          ...state,
+          userInput: action.payload.answer,
+          isCorrect: action.payload.isCorrect,
+          points: action.payload.points,
+          status: ExerciseStatus.COMPLETED,
+        } as TextInputExerciseState;
+      }
     case 'SET_STATUS':
       return {
         ...state,
         status: action.payload,
       };
     case 'SET_RESULT':
-      return {
-        ...state,
-        isCorrect: action.payload.isCorrect,
-        points: action.payload.points,
-        status: ExerciseStatus.COMPLETED,
-      };
+      if ('selectedAnswer' in state) {
+        // MCQ Exercise
+        const mcqResult = action.payload as MCQExerciseResult;
+        return {
+          ...state,
+          selectedAnswer: mcqResult.selectedAnswer,
+          isCorrect: mcqResult.isCorrect,
+          points: mcqResult.points,
+          status: ExerciseStatus.COMPLETED,
+        } as MCQExerciseState;
+      } else {
+        // Text Input Exercise
+        const textInputResult = action.payload as TextInputExerciseResult;
+        return {
+          ...state,
+          userInput: textInputResult.userInput,
+          isCorrect: textInputResult.isCorrect,
+          points: textInputResult.points,
+          status: ExerciseStatus.COMPLETED,
+        } as TextInputExerciseState;
+      }
     case 'RESET':
-      return initialState;
+      return createInitialState('mcq'); // Default to MCQ for reset
     default:
       return state;
   }
@@ -73,7 +113,7 @@ function exerciseReducer(state: ExerciseState, action: ExerciseAction): Exercise
 
 export const ExerciseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [exercise, setExercise] = React.useState<Exercise | null>(null);
-  const [state, dispatch] = useReducer(exerciseReducer, initialState);
+  const [state, dispatch] = useReducer(exerciseReducer, createInitialState('mcq'));
 
   // Memoize the wrapped dispatch function
   const wrappedDispatch = useCallback((action: ExerciseAction) => {

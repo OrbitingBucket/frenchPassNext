@@ -218,3 +218,19 @@
 	
 2024-12-15 09:23:09.137 CET [50832] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
 	
+2024-12-15 09:28:57.216 CET [24728] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-16 06:37:17.971 CET [34848] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-16 06:37:17.971 CET [19308] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-17 05:41:11.798 CET [5904] LOG:  could not receive data from client: An established connection was aborted by the software in your host machine.
+	
+2024-12-17 05:41:12.211 CET [8344] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-17 05:46:16.727 CET [4980] LOG:  checkpoint starting: time
+2024-12-17 05:46:16.990 CET [4980] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.228 s, sync=0.004 s, total=0.265 s; sync files=3, longest=0.003 s, average=0.002 s; distance=13 kB, estimate=3876 kB; lsn=0/3E7F2B8, redo lsn=0/3E7F280
+2024-12-17 06:05:33.737 CET [8500] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-12-17 06:32:33.668 CET [12440] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	

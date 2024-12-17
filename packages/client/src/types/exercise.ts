@@ -1,7 +1,7 @@
 // client/src/types/exercise.ts
 export type DifficultyLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
-export type ExerciseType = 'mcq' | 'fillInGap';
+export type ExerciseType = 'mcq' | 'text_input';
 
 export interface BaseExercise {
   id: string;
@@ -23,15 +23,15 @@ export interface MCQExercise extends BaseExercise {
   feedback: Record<string, string>;
 }
 
-export interface FillInGapExercise extends BaseExercise {
-  type: 'fillInGap';
+export interface TextInputExercise extends BaseExercise {
+  type: 'text_input';
   sentence: string;
   correctAnswer: string;
   feedback: string;
   acceptableAnswers?: string[];
 }
 
-export type Exercise = MCQExercise | FillInGapExercise;
+export type Exercise = MCQExercise | TextInputExercise;
 
 export interface BaseExerciseResult {
   exerciseId: string;
@@ -46,12 +46,12 @@ export interface MCQExerciseResult extends BaseExerciseResult {
   selectedAnswer: string;
 }
 
-export interface FillInGapExerciseResult extends BaseExerciseResult {
-  type: 'fillInGap';
+export interface TextInputExerciseResult extends BaseExerciseResult {
+  type: 'text_input';
   userInput: string;
 }
 
-export type ExerciseResult = MCQExerciseResult | FillInGapExerciseResult;
+export type ExerciseResult = MCQExerciseResult | TextInputExerciseResult;
 
 export interface VerificationResponse {
   isCorrect: boolean;
@@ -81,8 +81,8 @@ export interface MCQExerciseState extends BaseExerciseState {
   selectedAnswer: string | null;
 }
 
-export interface FillInGapExerciseState extends BaseExerciseState {
+export interface TextInputExerciseState extends BaseExerciseState {
   userInput: string;
 }
 
-export type ExerciseState = MCQExerciseState | FillInGapExerciseState;
+export type ExerciseState = MCQExerciseState | TextInputExerciseState;

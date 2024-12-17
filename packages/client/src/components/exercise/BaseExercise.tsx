@@ -3,6 +3,7 @@ import React from 'react';
 import { Exercise, ExerciseResult } from '../../types/exercise';
 import { useExercise } from '../../hooks/useExercise';
 import { MCQExercise } from './MCQExercise';
+import { TextInputExercise } from './TextInputExercise';
 
 interface VerificationResponse {
   isCorrect: boolean;
@@ -39,6 +40,14 @@ export const BaseExercise: React.FC<BaseExerciseProps> = ({
           <MCQExercise 
             exercise={exercise} 
             onComplete={onComplete} 
+            onNext={onNext}
+          />
+        );
+      case 'text_input':
+        return (
+          <TextInputExercise
+            exercise={exercise}
+            onComplete={onComplete}
             onNext={onNext}
           />
         );

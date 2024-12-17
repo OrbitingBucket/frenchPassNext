@@ -7,14 +7,6 @@ import { exerciseService } from './services/exerciseService';
 import { TimerProvider } from './contexts/TimerContext';
 import { ExerciseProvider } from './contexts/ExerciseContext';
 
-interface VerificationResponse {
-  isCorrect: boolean;
-  points: number;
-  correctAnswer: string;
-  feedback: string;
-  isTimeout?: boolean;
-}
-
 function App() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -106,7 +98,7 @@ function App() {
       } else {
         result = {
           exerciseId: currentExercise.id,
-          type: 'fillInGap',
+          type: 'text_input',
           isCorrect: false,
           userInput: '',
           timeTaken: currentExercise.timeLimit,
@@ -117,7 +109,7 @@ function App() {
       // Process the result through the server to get the correct answer
       handleExerciseComplete(result);
     }
-  }, [currentExerciseIndex, exercises, handleExerciseComplete]);
+  }, [currentExerciseIndex, exercises]);
 
   if (loading) return <div className="text-center">Loading...</div>;
   if (error) return <div className="text-center text-red-500">Error: {error}</div>;
