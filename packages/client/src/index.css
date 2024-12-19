@@ -1,6 +1,5 @@
 /* packages/client/src/index.css */
 
-/* Reset and base styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

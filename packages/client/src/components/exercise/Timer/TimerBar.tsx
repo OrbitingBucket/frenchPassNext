@@ -4,27 +4,23 @@ import { useTimer } from '../../../contexts/TimerContext';
 
 const TimerBar: React.FC = () => {
   const { state } = useTimer();
-  const barRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const progress = state.timeRemaining / state.timeLimit;
 
   useEffect(() => {
-    if (!barRef.current) return;
-    
-    // Use transform for better performance
-    barRef.current.style.transform = `scaleX(${Math.max(0, progress)})`;
+    if (!progressRef.current) return;
+    progressRef.current.style.transform = `scaleX(${Math.max(0, progress)})`;
   }, [progress]);
 
   return (
-    <div
-      className={`w-full h-2 rounded-full overflow-hidden
-        ${state.isExpired ? 'bg-error-500' : 'bg-gray-200'}`}
-    >
+    <div className="w-full h-2 rounded-full overflow-hidden bg-neutral-200">
       <div
-        ref={barRef}
-        className="h-full bg-primary-500 rounded-full origin-left"
-        style={{
+        ref={progressRef}
+        className={`h-full rounded-full origin-left transform transition-transform
+          ${state.isExpired ? 'bg-error-500' : 'bg-primary-500'}`}
+        style={{ 
           transform: `scaleX(${Math.max(0, progress)})`,
-          willChange: 'transform'
+          transition: 'transform 0.1s linear'
         }}
       />
     </div>

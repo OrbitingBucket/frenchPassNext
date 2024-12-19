@@ -39,16 +39,10 @@ export const Feedback: React.FC<FeedbackProps> = ({ exercise, serverFeedback, is
       if (!feedbackMessage) {
         feedbackMessage = mcqState.selectedAnswer ? mcqExercise.feedback[mcqState.selectedAnswer] : '';
       }
-      if (!feedbackMessage) {
-        feedbackMessage = mcqState.selectedAnswer ? mcqExercise.feedback[mcqState.selectedAnswer] : '';
-      }
     } else if (exercise.type === 'text_input' && 'userInput' in state) {
       // Text Input specific feedback
       const textInputExercise = exercise as TextInputExercise;
       
-      if (!feedbackMessage) {
-        feedbackMessage = textInputExercise.feedback;
-      }
       if (!feedbackMessage) {
         feedbackMessage = textInputExercise.feedback;
       }
@@ -67,8 +61,9 @@ export const Feedback: React.FC<FeedbackProps> = ({ exercise, serverFeedback, is
     <div className="fixed bottom-4 left-0 right-0 px-4 z-50">
       <div
         className={`mx-auto max-w-3xl p-6 rounded-lg shadow-lg ${
-          isSuccess ? 'bg-success-50 text-success-800 border border-success-200' : 
-                     'bg-error-50 text-error-800 border border-error-200'
+          isSuccess 
+            ? 'bg-success-50 text-success-800 border border-success-200' 
+            : 'bg-error-50 text-error-800 border border-error-200'
         }`}
       >
         <h3 className="text-lg font-bold mb-2">{title}</h3>

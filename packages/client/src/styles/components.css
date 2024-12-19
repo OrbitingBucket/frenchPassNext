@@ -1,0 +1,56 @@
+/* packages/client/src/styles/components.css */
+
+@layer components {
+  /* Timer components */
+  .timer-bar {
+    @apply w-full h-2 rounded-full overflow-hidden;
+  }
+
+  .timer-bar-progress {
+    @apply h-full bg-primary-500 rounded-full origin-left;
+    @apply animate-timer-progress;
+    animation-play-state: running;
+    animation-duration: var(--timer-duration);
+  }
+
+  .timer-bar-progress-paused {
+    animation-play-state: paused;
+  }
+
+  .timer-bar-progress-expired {
+    @apply bg-error-500;
+  }
+
+  .timer-text {
+    @apply text-base font-medium px-4 py-2 rounded-lg text-neutral-700;
+  }
+
+  .timer-text-expired {
+    @apply text-error-500;
+  }
+
+  /* Feedback components */
+  .feedback-container {
+    @apply fixed bottom-4 left-0 right-0 px-4 z-50;
+  }
+
+  .feedback-content {
+    @apply mx-auto max-w-3xl p-6 rounded-lg shadow-lg;
+  }
+
+  .feedback-success {
+    @apply bg-success-50 text-success-800 border border-success-200;
+  }
+
+  .feedback-error {
+    @apply bg-error-50 text-error-800 border border-error-200;
+  }
+
+  .feedback-title {
+    @apply text-lg font-bold mb-2;
+  }
+
+  .feedback-message {
+    @apply whitespace-pre-wrap break-words;
+  }
+}

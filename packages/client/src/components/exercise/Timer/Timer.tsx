@@ -6,7 +6,6 @@ const Timer: React.FC = () => {
   const { state } = useTimer();
   
   const formatTime = (seconds: number): string => {
-    // Use floor instead of ceil to sync with TimerBar
     const totalSeconds = Math.floor(Math.max(0, seconds));
     const minutes = Math.floor(totalSeconds / 60);
     const remainingSeconds = totalSeconds % 60;
@@ -18,9 +17,8 @@ const Timer: React.FC = () => {
   };
 
   return (
-    <div
-      className={`text-base font-medium px-4 py-2 rounded-lg
-        ${state.isExpired ? 'text-error-500' : 'text-gray-700'}`}
+    <div className={`text-base font-medium px-4 py-2 rounded-lg
+      ${state.isExpired ? 'text-error-500' : 'text-neutral-700'}`}
     >
       Temps restant: {formatTime(state.timeRemaining)}
     </div>
