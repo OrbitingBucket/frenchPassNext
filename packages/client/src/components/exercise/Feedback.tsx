@@ -23,11 +23,7 @@ export const Feedback: React.FC<FeedbackProps> = ({ exercise, serverFeedback, is
     if (state.status === ExerciseStatus.TIMER_EXPIRED || isTimeout) {
       return {
         title: "Le temps est écoulé...",
-        message: `La bonne réponse était : ${
-          exercise.type === 'mcq' 
-            ? (exercise as MCQExercise).options[(exercise as MCQExercise).correctAnswer]
-            : (exercise as TextInputExercise).correctAnswer
-        }`,
+        message: "",
         isSuccess: false
       };
     }
@@ -43,8 +39,8 @@ export const Feedback: React.FC<FeedbackProps> = ({ exercise, serverFeedback, is
       if (!feedbackMessage) {
         feedbackMessage = mcqState.selectedAnswer ? mcqExercise.feedback[mcqState.selectedAnswer] : '';
       }
-      if (!isCorrect) {
-        feedbackMessage += `\nLa bonne réponse était : ${mcqExercise.options[mcqExercise.correctAnswer]}`;
+      if (!feedbackMessage) {
+        feedbackMessage = mcqState.selectedAnswer ? mcqExercise.feedback[mcqState.selectedAnswer] : '';
       }
     } else if (exercise.type === 'text_input' && 'userInput' in state) {
       // Text Input specific feedback
@@ -53,11 +49,8 @@ export const Feedback: React.FC<FeedbackProps> = ({ exercise, serverFeedback, is
       if (!feedbackMessage) {
         feedbackMessage = textInputExercise.feedback;
       }
-      if (!isCorrect) {
-        feedbackMessage += `\nLa bonne réponse était : ${textInputExercise.correctAnswer}`;
-        if (textInputExercise.acceptableAnswers?.length) {
-          feedbackMessage += `\nAutres réponses acceptables : ${textInputExercise.acceptableAnswers.join(', ')}`;
-        }
+      if (!feedbackMessage) {
+        feedbackMessage = textInputExercise.feedback;
       }
     }
 

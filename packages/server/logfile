@@ -234,3 +234,11 @@
 	
 2024-12-17 06:32:33.668 CET [12440] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
 	
+2024-12-17 06:36:17.065 CET [4980] LOG:  checkpoint starting: time
+2024-12-17 06:36:17.285 CET [4980] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.213 s, sync=0.003 s, total=0.221 s; sync files=3, longest=0.002 s, average=0.001 s; distance=10 kB, estimate=3489 kB; lsn=0/3E81E10, redo lsn=0/3E81DD8
+2024-12-17 11:39:37.877 CET [29760] LOG:  server process (PID 56880) was terminated by exception 0xC000013A
+2024-12-17 11:39:37.877 CET [29760] DETAIL:  Failed process was running: SELECT "public"."Exercise"."id", "public"."Exercise"."category", "public"."Exercise"."subcategory", "public"."Exercise"."type"::text, "public"."Exercise"."difficultyLevel"::text, "public"."Exercise"."instruction", "public"."Exercise"."sentence", "public"."Exercise"."options", "public"."Exercise"."correctAnswer", "public"."Exercise"."feedback", "public"."Exercise"."points", "public"."Exercise"."timeLimit", "public"."Exercise"."tags", "public"."Exercise"."createdAt" FROM "public"."Exercise" WHERE 1=1 OFFSET $1
+2024-12-17 11:39:37.877 CET [29760] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-12-17 11:39:37.877 CET [29760] LOG:  terminating any other active server processes
+2024-12-17 11:39:37.889 CET [29760] LOG:  received fast shutdown request
+^C

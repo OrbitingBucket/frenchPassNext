@@ -39,7 +39,8 @@ export const TextInputExercise: React.FC<TextInputExerciseProps> = ({
     if (inputRef.current && measureRef.current) {
       const textToMeasure = userInput || (!isFocused ? getInitialValue() : '');
       measureRef.current.textContent = textToMeasure;
-      const width = Math.max(measureRef.current.offsetWidth + 24, 80);
+      // Add extra padding to account for border (4px) and input padding (24px)
+      const width = Math.max(measureRef.current.offsetWidth + 32, 80);
       inputRef.current.style.width = `${width}px`;
     }
   };
