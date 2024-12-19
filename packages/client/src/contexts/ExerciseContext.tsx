@@ -1,11 +1,15 @@
-// src/contexts/ExerciseContext.tsx
+// client/src/contexts/ExerciseContext.tsx
+import React, { createContext, useReducer, ReactNode, useCallback, useMemo } from 'react';
+import { Exercise, ExerciseState, ExerciseStatus, ExerciseResult, MCQExerciseResult, TextInputExerciseResult } from '../types/exercise';
 
-import React, { createContext, useReducer, ReactNode, useCallback } from 'react';
-import { Exercise, ExerciseState, ExerciseStatus, ExerciseResult, MCQExerciseState, TextInputExerciseState, MCQExerciseResult, TextInputExerciseResult } from '../types/exercise';
-
-interface ExerciseContextType {
+interface ExerciseContextState {
   exercise: Exercise | null;
   state: ExerciseState | null;
+  loading: boolean;
+  error: string | null;
+}
+
+interface ExerciseContextType extends ExerciseContextState {
   dispatch: React.Dispatch<ExerciseAction>;
 }
 
@@ -15,6 +19,8 @@ type ExerciseAction =
   | { type: 'SET_ANSWER'; payload: { answer: string; isCorrect: boolean; points: number } }
   | { type: 'SET_STATUS'; payload: ExerciseStatus }
   | { type: 'SET_RESULT'; payload: ExerciseResult }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string }
   | { type: 'RESET' };
 
 export const ExerciseContext = createContext<ExerciseContextType | undefined>(undefined);
@@ -31,104 +37,159 @@ const createInitialState = (type: 'mcq' | 'text_input'): ExerciseState => {
     return {
       ...baseState,
       selectedAnswer: null,
-    } as MCQExerciseState;
+    } as ExerciseState;
   } else {
     return {
       ...baseState,
       userInput: '',
-    } as TextInputExerciseState;
+    } as ExerciseState;
   }
 };
 
-function exerciseReducer(state: ExerciseState, action: ExerciseAction): ExerciseState {
-  console.log('Reducer action:', action.type, 'payload:', 
-    action.type !== 'RESET' ? action.payload : 'no payload');
-  console.log('Current state:', state);
-  
+const initialContextState: ExerciseContextState = {
+  exercise: null,
+  state: null,
+  loading: false,
+  error: null,
+};
+
+function exerciseReducer(
+  state: ExerciseContextState,
+  action: ExerciseAction
+): ExerciseContextState {
   switch (action.type) {
-    case 'SET_EXERCISE':
-      return {
-        ...createInitialState(action.payload.type),
-        timeRemaining: action.payload.timeLimit,
-        status: ExerciseStatus.IN_PROGRESS,
-      };
-    case 'UPDATE_TIME':
+    case 'SET_EXERCISE': {
       return {
         ...state,
-        timeRemaining: action.payload,
+        exercise: action.payload,
+        state: createInitialState(action.payload.type),
+        loading: false,
+        error: null,
       };
-    case 'SET_ANSWER':
-      if ('selectedAnswer' in state) {
-        // MCQ Exercise
+    }
+
+    case 'UPDATE_TIME': {
+      if (!state.state) return state;
+      return {
+        ...state,
+        state: {
+          ...state.state,
+          timeRemaining: action.payload,
+        },
+      };
+    }
+
+    case 'SET_ANSWER': {
+      if (!state.state || !state.exercise) return state;
+
+      const newState = {
+        ...state.state,
+        isCorrect: action.payload.isCorrect,
+        points: action.payload.points,
+        status: ExerciseStatus.COMPLETED,
+      };
+
+      if ('selectedAnswer' in state.state) {
         return {
           ...state,
-          selectedAnswer: action.payload.answer,
-          isCorrect: action.payload.isCorrect,
-          points: action.payload.points,
-          status: ExerciseStatus.COMPLETED,
-        } as MCQExerciseState;
+          state: {
+            ...newState,
+            selectedAnswer: action.payload.answer,
+          },
+        };
       } else {
-        // Text Input Exercise
         return {
           ...state,
-          userInput: action.payload.answer,
-          isCorrect: action.payload.isCorrect,
-          points: action.payload.points,
-          status: ExerciseStatus.COMPLETED,
-        } as TextInputExerciseState;
+          state: {
+            ...newState,
+            userInput: action.payload.answer,
+          },
+        };
       }
-    case 'SET_STATUS':
+    }
+
+    case 'SET_STATUS': {
+      if (!state.state) return state;
       return {
         ...state,
-        status: action.payload,
+        state: {
+          ...state.state,
+          status: action.payload,
+        },
       };
-    case 'SET_RESULT':
-      if ('selectedAnswer' in state) {
-        // MCQ Exercise
+    }
+
+    case 'SET_RESULT': {
+      if (!state.state) return state;
+
+      const newState = {
+        ...state.state,
+        isCorrect: action.payload.isCorrect,
+        points: action.payload.points,
+        status: ExerciseStatus.COMPLETED,
+      };
+
+      if ('selectedAnswer' in state.state && 'selectedAnswer' in action.payload) {
         const mcqResult = action.payload as MCQExerciseResult;
         return {
           ...state,
-          selectedAnswer: mcqResult.selectedAnswer,
-          isCorrect: mcqResult.isCorrect,
-          points: mcqResult.points,
-          status: ExerciseStatus.COMPLETED,
-        } as MCQExerciseState;
-      } else {
-        // Text Input Exercise
+          state: {
+            ...newState,
+            selectedAnswer: mcqResult.selectedAnswer,
+          },
+        };
+      } else if ('userInput' in state.state && 'userInput' in action.payload) {
         const textInputResult = action.payload as TextInputExerciseResult;
         return {
           ...state,
-          userInput: textInputResult.userInput,
-          isCorrect: textInputResult.isCorrect,
-          points: textInputResult.points,
-          status: ExerciseStatus.COMPLETED,
-        } as TextInputExerciseState;
+          state: {
+            ...newState,
+            userInput: textInputResult.userInput,
+          },
+        };
       }
-    case 'RESET':
-      return createInitialState('mcq'); // Default to MCQ for reset
+      return state;
+    }
+
+    case 'SET_LOADING': {
+      return {
+        ...state,
+        loading: action.payload,
+      };
+    }
+
+    case 'SET_ERROR': {
+      return {
+        ...state,
+        error: action.payload,
+        loading: false,
+      };
+    }
+
+    case 'RESET': {
+      return initialContextState;
+    }
+
     default:
       return state;
   }
 }
 
 export const ExerciseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [exercise, setExercise] = React.useState<Exercise | null>(null);
-  const [state, dispatch] = useReducer(exerciseReducer, createInitialState('mcq'));
+  const [state, dispatch] = useReducer(exerciseReducer, initialContextState);
 
-  // Memoize the wrapped dispatch function
   const wrappedDispatch = useCallback((action: ExerciseAction) => {
     console.log('Dispatching action:', action.type);
-    if (action.type === 'SET_EXERCISE') {
-      setExercise(action.payload);
-    }
     dispatch(action);
   }, []);
 
-  const value = React.useMemo(() => ({
-    exercise,
-    state,
-    dispatch: wrappedDispatch,
-  }), [exercise, state, wrappedDispatch]);
+  const value = useMemo(
+    () => ({
+      ...state,
+      dispatch: wrappedDispatch,
+    }),
+    [state, wrappedDispatch]
+  );
 
   return (
     <ExerciseContext.Provider value={value}>
