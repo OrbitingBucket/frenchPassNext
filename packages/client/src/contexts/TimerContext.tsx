@@ -107,9 +107,17 @@ export function TimerProvider({ children, onTimeUp, initialTimeLimit }: TimerPro
 
   useEffect(() => {
     let isComponentMounted = true;
+    let lastUpdateTime = 0;
+    const updateInterval = 1000 / 60; // 60 FPS
 
-    const updateTimer = () => {
+    const updateTimer = (timestamp: number) => {
       if (!startTimeRef.current || !state.isRunning) return;
+
+      // Throttle updates to 60 FPS for smoother animation
+      if (timestamp - lastUpdateTime < updateInterval) {
+        animationFrameRef.current = requestAnimationFrame(updateTimer);
+        return;
+      }
 
       const currentTime = performance.now();
       const elapsedSeconds = (currentTime - startTimeRef.current) / 1000;
@@ -123,11 +131,13 @@ export function TimerProvider({ children, onTimeUp, initialTimeLimit }: TimerPro
         return;
       }
 
+      lastUpdateTime = timestamp;
       dispatch({ type: 'UPDATE_TIME', payload: remainingTime });
       animationFrameRef.current = requestAnimationFrame(updateTimer);
     };
 
     if (state.isRunning) {
+      lastUpdateTime = performance.now();
       animationFrameRef.current = requestAnimationFrame(updateTimer);
     }
 
