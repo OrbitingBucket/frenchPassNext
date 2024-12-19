@@ -13,7 +13,7 @@ const TimerBar: React.FC = () => {
   }, [progress]);
 
   return (
-    <div className="w-full h-2 rounded-full overflow-hidden bg-neutral-200">
+    <div className={`w-full h-2 rounded-full overflow-hidden transition-colors duration-300 ${state.isExpired ? 'bg-error-500' : 'bg-neutral-200'}`}>
       <div
         ref={progressRef}
         className={`h-full rounded-full origin-left transform transition-transform
